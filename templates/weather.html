@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Information</title>
+    <!-- Import Materialize CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .input-field > label {
+        position: relative;
+      }
+
+      .collection .collection-item {
+        background-color: #43346ff7;
+        color: #f0f0f8;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-wrap: wrap;
+        border-bottom: 0;
+        background: linear-gradient(
+          90deg,
+          hsl(256 37% 31% / 1),
+          hsl(268 19% 47% / 1)
+        );
+      }
+
+      .collection {
+        border: 0;
+        border-radius: 23px;
+      }
+
+      .center-align {
+        padding-bottom: 1rem;
+      }
+
+      .center-align > a {
+        border-radius: 17px;
+        background: #058f8c;
+        box-shadow: inset 9.61px 9.61px 16px #047471,
+          inset -9.61px -9.61px 16px #06aaa7;
+      }
+
+      html {
+        /* background-color: #433470; */
+        color: hsl(248 57% 97% / 1);
+        background: linear-gradient(90deg, #76618f, #41326c);
+      }
+
+      /* Custom styles for weather icons */
+      .weather-icon {
+        width: 73px;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="center-align">Weather Information</h1>
+      <ul class="collection">
+        {% for key, value in weather_info.items() %} {% if key != "Weather_Icon"
+        %}
+        <li class="collection-item">
+          <strong>{{ key }}: &nbsp; </strong> {{ value }}
+        </li>
+        {% endif %} {% endfor %} {% if 'Weather_Icon' in weather_info %}
+        <li class="collection-item">
+          <strong>Weather Icon:</strong>
+          <img
+            class="weather-icon"
+            src="https://openweathermap.org/img/wn/{{ weather_info['Weather_Icon'] }}.png"
+            alt="Weather Icon"
+          />
+        </li>
+        {% endif %}
+      </ul>
+      <div class="center-align">
+        <a href="/" class="btn waves-effect waves-light">Back to Home</a>
+      </div>
+    </div>
+    <!-- Import Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>
