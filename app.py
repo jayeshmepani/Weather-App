@@ -6,7 +6,8 @@ from timezonefinder import TimezoneFinder
 
 app = Flask(__name__)
 
-API_KEY = "b49a087422a1475d1b413b8ae091b9a1"
+OPENWEATHER_API_KEY = "b49a087422a1475d1b413b8ae091b9a1"
+TOMORROW_API_KEY = "iC00Ows72v3X9qAcWJjychJC941b6duj"
 
 def dms_to_decimal(degrees, minutes, seconds, direction):
     decimal = degrees + minutes / 60 + seconds / 3600
@@ -20,7 +21,7 @@ def get_weather_by_city(api_key, city):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Error fetching weather data: {response.status_code}")
+        print(f"Error fetching weather data from OpenWeatherMap: {response.status_code}")
         return None
 
 def get_weather_by_coordinates(api_key, lat, lon):
@@ -29,7 +30,7 @@ def get_weather_by_coordinates(api_key, lat, lon):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Error fetching weather data: {response.status_code}")
+        print(f"Error fetching weather data from OpenWeatherMap: {response.status_code}")
         return None
 
 def get_weather_by_zip(api_key, zip_code, country_code):
@@ -38,7 +39,35 @@ def get_weather_by_zip(api_key, zip_code, country_code):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Error fetching weather data: {response.status_code}")
+        print(f"Error fetching weather data from OpenWeatherMap: {response.status_code}")
+        return None
+
+def get_tomorrow_weather_by_coordinates(api_key, lat, lon):
+    url = f"https://api.tomorrow.io/v4/weather/realtime?location={lat},{lon}&apikey={api_key}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error fetching weather data from Tomorrow.io: {response.status_code}")
+        return None
+
+def get_tomorrow_weather_by_city(api_key, city):
+    url = f"https://api.tomorrow.io/v4/weather/realtime?location={city}&apikey={api_key}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error fetching weather data from Tomorrow.io: {response.status_code}")
+        return None
+
+def get_tomorrow_weather_by_zip(api_key, zip_code, country_code):
+    location = f"{zip_code} {country_code}"
+    url = f"https://api.tomorrow.io/v4/weather/realtime?location={location}&apikey={api_key}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error fetching weather data from Tomorrow.io: {response.status_code}")
         return None
 
 def convert_utc_to_local(utc_timestamp, lat, lon):
@@ -67,72 +96,89 @@ def get_current_local_time(lat, lon, country_code=None):
     else:
         return "Unknown"
 
-def display_weather(data):
-    if data:
-        weather_info = {}
-        weather_info["City"] = data.get('name', 'Unknown')
-        
-        if 'sys' in data and 'country' in data['sys']:
-            weather_info["Country"] = data['sys']['country']
-        
-        weather_info["Coordinates"] = f"Longitude {data['coord']['lon']}, Latitude {data['coord']['lat']}"
-        
-        weather = data['weather'][0]
-        weather_info["Weather"] = weather['description'].capitalize()
-        weather_info["Weather_Icon"] = weather['icon']  # Add weather icon code
-        
-        main = data['main']
-        weather_info["Temperature"] = f"{main['temp']}°C"
-        weather_info["Feels Like"] = f"{main['feels_like']}°C"
-        weather_info["Min Temperature"] = f"{main['temp_min']}°C"
-        weather_info["Max Temperature"] = f"{main['temp_max']}°C"
-        weather_info["Pressure"] = f"{main['pressure']} hPa"
-        weather_info["Humidity"] = f"{main['humidity']}%"
-        
-        if 'rain' in data:
-            rain = data['rain']
-            weather_info["Rain Volume"] = f"{rain.get('1h', 'N/A')} mm"
-        
-        if 'snow' in data:
-            snow = data['snow']
-            weather_info["Snow Volume"] = f"{snow.get('1h', 'N/A')} mm"
-        
-        weather_info["Visibility"] = f"{data['visibility']} meters"
-        
-        wind = data['wind']
-        wind_speed_m_s = wind['speed']
-        wind_speed_km_h = wind_speed_m_s * 3.6
-        
-        weather_info["Wind Speed"] = f"{wind_speed_km_h:.3f} km/h or {wind_speed_m_s:.3f} m/s"
-        weather_info["Wind Direction"] = f"{wind['deg']}°"
-        if 'gust' in wind:
-            gust_kmh = wind['gust'] * 3.6
-            gust_ms = wind['gust']
-            weather_info["Wind Gust"] = f"{gust_kmh:.3f} km/h or {gust_ms:.3f} m/s"
-
-        
-        clouds = data['clouds']
-        weather_info["Cloudiness"] = f"{clouds['all']}%"
-        
-        sys = data['sys']
-        if 'sunrise' in sys and 'sunset' in sys and 'country' in sys and 'lat' in data['coord'] and 'lon' in data['coord']:
-            sunrise = convert_utc_to_local(sys['sunrise'], data['coord']['lat'], data['coord']['lon'])
-            sunset = convert_utc_to_local(sys['sunset'], data['coord']['lat'], data['coord']['lon'])
-            weather_info["Sunrise"] = sunrise
-            weather_info["Sunset"] = sunset
-        
-        current_time = get_current_local_time(data['coord']['lat'], data['coord']['lon'], data['sys']['country'] if 'sys' in data and 'country' in data['sys'] else None)
-        weather_info["Current Local Time"] = current_time
-        
-        if 'sea_level' in main:
-            weather_info["Sea Level Pressure"] = f"{main['sea_level']} hPa"
-        
-        if 'grnd_level' in main:
-            weather_info["Ground Level Pressure"] = f"{main['grnd_level']} hPa"
-        
-        return weather_info
+def uv_health_concern(index):
+    if 0 <= index <= 2:
+        return "Low"
+    elif 3 <= index <= 5:
+        return "Moderate"
+    elif 6 <= index <= 7:
+        return "High"
+    elif 8 <= index <= 10:
+        return "Very High"
     else:
-        return {"Error": "City not found or invalid API key"}
+        return "Extreme"
+
+def display_weather(openweather_data, tomorrow_data):
+    weather_info = {}
+    
+    if openweather_data:
+        weather_info["OpenWeatherMap"] = {}
+        weather_info["OpenWeatherMap"]["City"] = openweather_data.get('name', 'Unknown')
+        if 'sys' in openweather_data and 'country' in openweather_data['sys']:
+            weather_info["OpenWeatherMap"]["Country"] = openweather_data['sys']['country']
+        weather = openweather_data['weather'][0]
+        weather_info["OpenWeatherMap"]["Weather"] = weather['description'].capitalize()
+        weather_info["OpenWeatherMap"]["Weather_Icon"] = weather['icon']
+        main = openweather_data['main']
+        weather_info["OpenWeatherMap"]["Temperature"] = f"{main['temp']}°C"
+        weather_info["OpenWeatherMap"]["Feels Like"] = f"{main['feels_like']}°C"
+        weather_info["OpenWeatherMap"]["Min Temperature"] = f"{main['temp_min']}°C"
+        weather_info["OpenWeatherMap"]["Max Temperature"] = f"{main['temp_max']}°C"
+        # weather_info["OpenWeatherMap"]["Pressure"] = f"{main['pressure']} hPa"
+        # weather_info["OpenWeatherMap"]["Humidity"] = f"{main['humidity']}%"
+        if 'rain' in openweather_data:
+            rain = openweather_data['rain']
+            weather_info["OpenWeatherMap"]["Rain Volume"] = f"{rain.get('1h', 'N/A')} mm"
+        if 'snow' in openweather_data:
+            snow = openweather_data['snow']
+            weather_info["OpenWeatherMap"]["Snow Volume"] = f"{snow.get('1h', 'N/A')} mm"
+        weather_info["OpenWeatherMap"]["Visibility"] = f"{openweather_data['visibility']} meters"
+        # wind = openweather_data['wind']
+        # wind_speed_m_s = wind['speed']
+        # wind_speed_km_h = wind_speed_m_s * 3.6
+        # weather_info["OpenWeatherMap"]["Wind Speed"] = f"{wind_speed_km_h:.3f} km/h or {wind_speed_m_s:.3f} m/s"
+        # weather_info["OpenWeatherMap"]["Wind Direction"] = f"{wind['deg']}°"
+        # if 'gust' in wind:
+        #     gust_kmh = wind['gust'] * 3.6
+        #     gust_ms = wind['gust']
+        #     weather_info["OpenWeatherMap"]["Wind Gust"] = f"{gust_kmh:.3f} km/h or {gust_ms:.3f} m/s"
+        # clouds = openweather_data['clouds']
+        # weather_info["OpenWeatherMap"]["Cloudiness"] = f"{clouds['all']}%"
+        sys = openweather_data['sys']
+        if 'sunrise' in sys and 'sunset' in sys:
+            sunrise = convert_utc_to_local(sys['sunrise'], openweather_data['coord']['lat'], openweather_data['coord']['lon'])
+            sunset = convert_utc_to_local(sys['sunset'], openweather_data['coord']['lat'], openweather_data['coord']['lon'])
+            weather_info["OpenWeatherMap"]["Sunrise"] = sunrise
+            weather_info["OpenWeatherMap"]["Sunset"] = sunset
+        current_time = get_current_local_time(openweather_data['coord']['lat'], openweather_data['coord']['lon'], openweather_data['sys']['country'] if 'sys' in openweather_data and 'country' in openweather_data['sys'] else None)
+        weather_info["OpenWeatherMap"]["Current Local Time"] = current_time
+        if 'sea_level' in main:
+            weather_info["OpenWeatherMap"]["Sea Level Pressure"] = f"{main['sea_level']} hPa"
+        if 'grnd_level' in main:
+            weather_info["OpenWeatherMap"]["Ground Level Pressure"] = f"{main['grnd_level']} hPa"
+
+    if tomorrow_data:
+        values = tomorrow_data['data']['values']
+        location = tomorrow_data['location']
+        weather_info["Tomorrow.io"] = {}
+        weather_info["Tomorrow.io"]["Coordinates"] = f"Longitude {location['lon']}, Latitude {location['lat']}"
+        # weather_info["Tomorrow.io"]["Temperature"] = f"{values['temperature']}°C"
+        # weather_info["Tomorrow.io"]["Feels Like"] = f"{values['temperatureApparent']}°C"
+        weather_info["Tomorrow.io"]["Humidity"] = f"{values['humidity']}%"
+        weather_info["Tomorrow.io"]["Pressure"] = f"{values['pressureSurfaceLevel']} hPa"
+        # weather_info["Tomorrow.io"]["Visibility"] = f"{values['visibility']} km"
+        weather_info["Tomorrow.io"]["Wind Speed"] = f"{values['windSpeed']} m/s or {(values['windSpeed'] * 3.6):.3f} km/h"
+        weather_info["Tomorrow.io"]["Wind Gust"] = f"{values['windGust']} m/s or {(values['windGust'] * 3.6):.3f} km/h"
+        weather_info["Tomorrow.io"]["Wind Direction"] = f"{values['windDirection']}°"
+        weather_info["Tomorrow.io"]["Cloud Base"] = f"{values['cloudBase']} km"
+        weather_info["Tomorrow.io"]["Cloud Ceiling"] = f"{values['cloudCeiling']} km"
+        weather_info["Tomorrow.io"]["Cloudiness"] = f"{values['cloudCover']}%"
+        weather_info["Tomorrow.io"]["Dew Point"] = f"{values['dewPoint']}°C"
+        weather_info["Tomorrow.io"]["UV Index"] = f"{values['uvIndex']} ({uv_health_concern(values['uvIndex'])})"
+        weather_info["Tomorrow.io"]["UV Health Concern"] = f"{values['uvHealthConcern']} ({uv_health_concern(values['uvHealthConcern'])})"
+        current_time = get_current_local_time(location['lat'], location['lon'])
+
+    return weather_info
 
 @app.route('/')
 def index():
@@ -144,7 +190,8 @@ def weather():
     
     if choice == '1':
         city = request.form['city']
-        weather_data = get_weather_by_city(API_KEY, city)
+        openweather_data = get_weather_by_city(OPENWEATHER_API_KEY, city)
+        tomorrow_data = get_tomorrow_weather_by_city(TOMORROW_API_KEY, city)
     elif choice == '2':
         coord_type = request.form['coord_type']
         if coord_type == '1':
@@ -164,15 +211,17 @@ def weather():
             lon = dms_to_decimal(lon_deg, lon_min, lon_sec, lon_dir)
         else:
             return "Invalid coordinate type selected"
-        weather_data = get_weather_by_coordinates(API_KEY, lat, lon)
+        openweather_data = get_weather_by_coordinates(OPENWEATHER_API_KEY, lat, lon)
+        tomorrow_data = get_tomorrow_weather_by_coordinates(TOMORROW_API_KEY, lat, lon)
     elif choice == '3':
         zip_code = request.form['zip_code']
         country_code = request.form['country_code'].upper()
-        weather_data = get_weather_by_zip(API_KEY, zip_code, country_code)
+        openweather_data = get_weather_by_zip(OPENWEATHER_API_KEY, zip_code.split(" ")[0], country_code)
+        tomorrow_data = get_tomorrow_weather_by_zip(TOMORROW_API_KEY, zip_code, country_code)
     else:
         return "Invalid choice"
     
-    weather_info = display_weather(weather_data)
+    weather_info = display_weather(openweather_data, tomorrow_data)
     return render_template('weather.html', weather_info=weather_info)
 
 if __name__ == '__main__':

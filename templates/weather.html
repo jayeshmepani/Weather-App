@@ -30,7 +30,7 @@
       }
 
       .collection {
-        border: 0;
+        border: 1.5px solid hsl(248 57% 61% / 1);
         border-radius: 23px;
       }
 
@@ -56,30 +56,41 @@
         width: 73px;
         height: auto;
       }
+      .collection-item:last-child {
+        padding-bottom: 1.5rem;
+      }
+
+      .collection-item:first-child {
+        padding-top: 1.5rem;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1 class="center-align">Weather Information</h1>
+      <h2 class="center-align">Weather Information</h2>
+
       <ul class="collection">
-        {% for key, value in weather_info.items() %} {% if key != "Weather_Icon"
-        %}
+        {% if weather_info %} {% for source, data in weather_info.items() %} {%
+        for key, value in data.items() %}
         <li class="collection-item">
-          <strong>{{ key }}: &nbsp; </strong> {{ value }}
-        </li>
-        {% endif %} {% endfor %} {% if 'Weather_Icon' in weather_info %}
-        <li class="collection-item">
-          <strong>Weather Icon:</strong>
+          {% if key == "Weather_Icon" %}
           <img
-            class="weather-icon"
-            src="https://openweathermap.org/img/wn/{{ weather_info['Weather_Icon'] }}.png"
+            src="http://openweathermap.org/img/wn/{{ value }}@2x.png"
             alt="Weather Icon"
+            class="weather-icon"
           />
+          {% else %}
+          <strong>{{ key }}: &nbsp; </strong> {{ value }} {% endif %}
+        </li>
+        {% endfor %} {% endfor %} {% else %}
+        <li class="collection-item">
+          <strong>No weather information available.</strong>
         </li>
         {% endif %}
       </ul>
+
       <div class="center-align">
-        <a href="/" class="btn waves-effect waves-light">Back to Home</a>
+        <a href="/" class="btn waves-effect waves-light">Back</a>
       </div>
     </div>
     <!-- Import Materialize JavaScript -->
