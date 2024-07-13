@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Forecast</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        overflow: visible;
+      }
+      h1 {
+        text-align: center;
+      }
+      .plot-container {
+        margin: 20px;
+      }
+      .plot-container h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Weather Forecast</h1>
+
+    <div class="plot-container">
+      <h2>Temperature</h2>
+      {{ temp_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Apparent Temperature (Feels like)</h2>
+      {{ apparent_temp_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Humidity</h2>
+      {{ humidity_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Wind Speed</h2>
+      {{ wind_speed_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Wind Direction</h2>
+      {{ wind_direction_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Wind Gust</h2>
+      {{ wind_gust_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Pressure</h2>
+      {{ pressure_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Cloud Base</h2>
+      {{ cloud_base_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Cloud Ceiling</h2>
+      {{ cloud_ceiling_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Cloud Cover</h2>
+      {{ cloud_cover_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Dew Point</h2>
+      {{ dew_point_plot_div|safe }}
+    </div>
+
+    <div class="plot-container">
+      <h2>Evapotranspiration</h2>
+      {{ evapotranspiration_plot_div|safe }}
+    </div>
+  </body>
+</html>
