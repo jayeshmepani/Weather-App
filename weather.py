@@ -14,8 +14,8 @@ import plotly.io as pio
 
 app = Flask(__name__)
 
-OPENWEATHER_API_KEY = "b49a087422a1475d1b413b8ae091b9a1"
-TOMORROW_API_KEY = "iC00Ows72v3X9qAcWJjychJC941b6duj"
+OPENWEATHER_API_KEY = "YOUR API"
+TOMORROW_API_KEY = "YOUR API"
 
 def dms_to_decimal(degrees, minutes, seconds, direction):
     decimal = degrees + minutes / 60 + seconds / 3600
