@@ -1,0 +1,7 @@
+Flask
+requests
+pytz
+timezonefinder
+matplotlib
+plotly
+Werkzeug
