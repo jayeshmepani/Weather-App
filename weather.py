@@ -1,21 +1,20 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template
 import requests
 import pytz
 from datetime import datetime
 from timezonefinder import TimezoneFinder
-import matplotlib.pyplot as plt
-import io
-import base64
-import json
 import logging
 import requests
 import plotly.graph_objects as go
 import plotly.io as pio
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 
-OPENWEATHER_API_KEY = "YOUR API"
-TOMORROW_API_KEY = "YOUR API"
+load_dotenv()
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+TOMORROW_API_KEY = os.getenv("TOMORROW_API_KEY")
 
 def dms_to_decimal(degrees, minutes, seconds, direction):
     decimal = degrees + minutes / 60 + seconds / 3600

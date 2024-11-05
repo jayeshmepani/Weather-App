@@ -2,6 +2,6 @@ Flask
 requests
 pytz
 timezonefinder
-matplotlib
 plotly
-Werkzeug
+python-dotenv
+gunicorn
