@@ -5,16 +5,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Modern Weather App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
   <div class="container">
     <div class="weather-card">
-      <h1>🌤️ Modern Weather</h1>
+      <h1>
+        <i class="fas fa-cloud-sun"></i>
+        Modern Weather
+      </h1>
+
       <form id="weatherForm" method="post" action="/weather">
         <div class="form-group">
-          <label for="choice">Choose Input Method</label>
+          <label for="choice">
+            <i class="fas fa-list"></i>
+            Choose Input Method
+          </label>
           <div class="custom-dropdown" data-target-input="choice">
             <button type="button" class="dropdown-trigger">
               <span>Select your option</span>
@@ -22,13 +30,16 @@
             <div class="dropdown-menu">
               <ul>
                 <li data-value="1">
-                  <i class="fas fa-city"></i> City Name
+                  <i class="fas fa-city"></i>
+                  City Name
                 </li>
                 <li data-value="2">
-                  <i class="fas fa-map-marker-alt"></i> Coordinates
+                  <i class="fas fa-map-marker-alt"></i>
+                  Coordinates
                 </li>
                 <li data-value="3">
-                  <i class="fas fa-mail-bulk"></i> Zip/Postal Code
+                  <i class="fas fa-envelope-open-text"></i>
+                  Zip/Postal Code
                 </li>
               </ul>
             </div>
@@ -36,87 +47,170 @@
           <input type="hidden" id="choice" name="choice" value="" required>
         </div>
 
+        <!-- City input -->
         <div id="city_input" class="input-section">
-          <div class="form-group">
-            <label for="city">City Name</label>
-            <input type="text" id="city" name="city" placeholder="Enter city name (e.g., London, Tokyo)" />
+          <div class="form-group field-group">
+            <label for="city">
+              <i class="fas fa-city"></i>
+              City Name
+            </label>
+            <div class="input-container">
+              <input type="text" id="city" min="2" name="city" placeholder="Enter city (e.g., London)" />
+              {% include 'partials/validation.html' %}
+            </div>
           </div>
         </div>
 
+        <!-- Coordinate format -->
         <div id="coords_input" class="input-section">
           <div class="form-group">
-            <label for="coord_type">Coordinate Format</label>
+            <label for="coord_type">
+              <i class="fas fa-compass"></i>
+              Coordinate Format
+            </label>
             <div class="custom-dropdown" data-target-input="coord_type">
               <button type="button" class="dropdown-trigger">
-                <span>Choose coordinate format</span>
+                <span>Choose format</span>
               </button>
               <div class="dropdown-menu">
                 <ul>
                   <li data-value="1">
-                    <i class="fas fa-crosshairs"></i> Decimal Degrees
+                    <i class="fas fa-map-pin"></i>
+                    Decimal Degrees
                   </li>
                   <li data-value="2">
-                    <i class="fas fa-compass"></i> Degrees, Minutes, Seconds
+                    <i class="fas fa-location-arrow"></i>
+                    Degrees, Minutes, Seconds
                   </li>
                 </ul>
               </div>
             </div>
-            <input type="hidden" id="coord_type" name="coord_type" value="">
+            <input type="hidden" id="coord_type" name="coord_type" value="" />
           </div>
 
-          <div id="decimal_coords" class="input-section">
-            <div class="coords-container">
-              <div class="form-group">
-                <label for="lat">Latitude</label>
-                <input type="text" id="lat" name="lat" placeholder="e.g., 40.7128" />
+          <!-- Decimal Coordinates -->
+          <div id="decimal_coords" class="input-section coords-container">
+            <div class="form-group field-group">
+              <label for="lat">
+                <i class="fas fa-angle-up"></i>
+                Latitude
+              </label>
+              <div class="input-container">
+                <input type="text" id="lat" name="lat" placeholder="e.g., 40.7128" pattern="-?\d+(\.\d+)?"
+                  title="Enter valid decimal latitude" />
+                {% include 'partials/validation.html' %}
               </div>
-              <div class="form-group">
-                <label for="lon">Longitude</label>
-                <input type="text" id="lon" name="lon" placeholder="e.g., -74.0060" />
+            </div>
+
+            <div class="form-group field-group">
+              <label for="lon">
+                <i class="fas fa-angle-right"></i>
+                Longitude
+              </label>
+              <div class="input-container">
+                <input type="text" id="lon" name="lon" placeholder="e.g., -74.0060" pattern="-?\d+(\.\d+)?"
+                  title="Enter valid decimal longitude" />
+                {% include 'partials/validation.html' %}
               </div>
             </div>
           </div>
 
+          <!-- DMS Coordinates -->
           <div id="dms_coords" class="input-section">
-            <div class="form-group">
-              <label>Latitude (DMS)</label>
+            <div class="form-group field-group">
+              <label>
+                <i class="fas fa-location-crosshairs"></i>
+                Latitude (DMS)
+              </label>
               <div class="dms-group">
-                <input type="text" id="lat_deg" name="lat_deg" placeholder="Degrees" />
-                <input type="text" id="lat_min" name="lat_min" placeholder="Minutes" />
-                <input type="text" id="lat_sec" name="lat_sec" placeholder="Seconds" />
-                <input type="text" id="lat_dir" name="lat_dir" placeholder="N/S" maxlength="1" />
+                <div class="input-container">
+                  <input type="text" id="lat_deg" name="lat_deg" placeholder="°" pattern="\d{1,3}"
+                    title="Degrees (0–180)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lat_min" name="lat_min" placeholder="′" pattern="\d{1,2}"
+                    title="Minutes (0–59)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lat_sec" name="lat_sec" placeholder="″" pattern="\d{1,2}"
+                    title="Seconds (0–59)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lat_dir" name="lat_dir" placeholder="N/S" maxlength="1" pattern="[NS]"
+                    title="Enter N or S" />
+                  {% include 'partials/validation.html' %}
+                </div>
               </div>
             </div>
-            <div class="form-group">
-              <label>Longitude (DMS)</label>
+
+            <div class="form-group field-group">
+              <label>
+                <i class="fas fa-location-crosshairs"></i>
+                Longitude (DMS)
+              </label>
               <div class="dms-group">
-                <input type="text" id="lon_deg" name="lon_deg" placeholder="Degrees" />
-                <input type="text" id="lon_min" name="lon_min" placeholder="Minutes" />
-                <input type="text" id="lon_sec" name="lon_sec" placeholder="Seconds" />
-                <input type="text" id="lon_dir" name="lon_dir" placeholder="E/W" maxlength="1" />
+                <div class="input-container">
+                  <input type="text" id="lon_deg" name="lon_deg" placeholder="°" pattern="\d{1,3}"
+                    title="Degrees (0–180)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lon_min" name="lon_min" placeholder="′" pattern="\d{1,2}"
+                    title="Minutes (0–59)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lon_sec" name="lon_sec" placeholder="″" pattern="\d{1,2}"
+                    title="Seconds (0–59)" />
+                  {% include 'partials/validation.html' %}
+                </div>
+                <div class="input-container">
+                  <input type="text" id="lon_dir" name="lon_dir" placeholder="E/W" maxlength="1" pattern="[EW]"
+                    title="Enter E or W" />
+                  {% include 'partials/validation.html' %}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div> <!-- closes #coords_input -->
 
-        <div id="zip_input" class="input-section">
-          <div class="coords-container">
-            <div class="form-group">
-              <label for="zip_code">Zip/Postal Code</label>
-              <input type="text" id="zip_code" name="zip_code" placeholder="e.g., 10001" />
+        <!-- ZIP / Postal Code -->
+        <div id="zip_input" class="input-section coords-container">
+          <div class="form-group field-group">
+            <label for="zip_code">
+              <i class="fas fa-mail-bulk"></i>
+              Zip/Postal Code
+            </label>
+            <div class="input-container">
+              <input type="text" id="zip_code" name="zip_code" placeholder="e.g., 10001" pattern="[A-Za-z0-9\s\-]{3,10}"
+                title="Enter a valid postal/ZIP code" />
+              {% include 'partials/validation.html' %}
             </div>
-            <div class="form-group">
-              <label for="country_code">Country Code</label>
-              <input type="text" id="country_code" name="country_code" placeholder="e.g., US" maxlength="2" />
+          </div>
+
+          <div class="form-group field-group">
+            <label for="country_code">
+              <i class="fas fa-flag"></i>
+              Country Code
+            </label>
+            <div class="input-container">
+              <input type="text" id="country_code" name="country_code" placeholder="e.g., US" maxlength="2"
+                pattern="[A-Z]{2}" title="Please enter exactly two uppercase letters (A–Z)" />
+              {% include 'partials/validation.html' %}
             </div>
           </div>
         </div>
 
         <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i>
           Get Weather Forecast
         </button>
 
         <div id="error-message" class="error-message" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i>
           Please fill in all required fields.
         </div>
       </form>
@@ -124,7 +218,6 @@
   </div>
 
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
 </body>
 
 </html>
