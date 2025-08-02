@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Information</title>
+  <!-- Import Materialize CSS -->
+  <link href="{{ url_for('static', filename='materialize.min.css') }}" rel="stylesheet" />
+
+  <style>
+    .input-field > label {
+      position: relative;
+    }
+
+    .collection .collection-item {
+      background-color: #43346ff7;
+      color: #f0f0f8;
+      display: flex;
+      align-items: center;
+      align-content: center;
+      flex-wrap: wrap;
+      border-bottom: 0;
+      padding: 10px 20px;
+      background: linear-gradient(90deg, hsl(222 23% 43% / 1), hsl(237 19% 47% / 1));
+    }
+
+    /* Grid styles for weather information */
+    .weather-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Three columns with equal width */
+        gap: 2rem; /* Gap between grid items */
+        list-style-type: none; /* Remove default list styling */
+        padding-left: 0; /* Remove default padding */
+    }
+    
+    .weather-grid li {
+        padding: 7px; /* Padding for each grid item */
+        border: solid 1.3px hsl(153deg 100% 53% / 47%);
+        border-radius: 5%;
+    }
+
+
+    .collection {
+      border: 1.5px solid hsl(229 73% 67% / 1);
+      border-radius: 23px;
+    }
+/*
+    .collection .collection-item ul{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Three columns with equal width */
+      /*gap: 2rem;
+/*    }*/
+
+
+    .center-align {
+      padding-bottom: 1rem;
+    }
+
+    .center-align > a, .center-align > #fc {
+      border-radius: 17px;
+      background: #058f8c;
+      box-shadow: inset 9.61px 9.61px 16px #047471, inset -9.61px -9.61px 16px #06aaa7;
+    }
+
+    html {
+      color: hsl(248 57% 97% / 1);
+      background: linear-gradient(270deg, hsl(222 23% 43% / 1), hsl(237 19% 47% / 1));
+    }
+
+    .weather-icon {
+      width: 73px;
+      height: auto;
+    }
+
+    .collection-item:last-child {
+      padding-bottom: 1.5rem;
+    }
+
+    .collection-item:first-child {
+      padding-top: 1.5rem;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .interval-selector {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #intervalbtn {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .interval-selector {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .interval-selector label {
+      margin: 10px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+
+    .interval-selector input[type="radio"] {
+      position: relative;
+      margin-right: 8px;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      border: 2px solid hsl(179 73% 67% / 1);
+      background-color: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .interval-selector input[type="radio"]:checked::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 10px;
+      height: 10px;
+      background-color: hsl(179 73% 67% / 1);
+      border-radius: 50%;
+    }
+
+    .interval-selector input[type="radio"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(5, 143, 140, 0.5);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="center-align">Weather Information</h2>
+
+    <ul class="collection"  id="weather-grid">
+      {% if weather_info or weather_info1 or weather_info2 %}
+        <!-- Display data from weather_info -->
+        {% if weather_info %}
+          {% for source, data in weather_info.items() %}
+            <li class="collection-item" >
+
+                  <ul id="Address">
+                    {% if source == "OpenWeatherMap" %}
+                        <li><strong>City: &nbsp; </strong>{{ data.City }}</li>
+                        <li><strong>Country: &nbsp; </strong>{{ data.Country }}</li>
+                    {% endif %}
+                    {% if source == "Tomorrow.io" %}
+                        <li><strong>Coordinates: &nbsp; </strong>{{ data.Coordinates }}</li>
+                    {% endif %}
+                  </ul>
+
+              </li>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Display data from weather_info1 -->
+        {% if weather_info1 %}
+          {% for source, data in weather_info1.items() %}
+            <li class="collection-item">
+                <ul>
+                    {% if source == "OpenWeatherMap" %}
+                        <li><strong>Weather: &nbsp; </strong>{{ data.Weather }}</li>
+                        <li>
+                          <img src="http://openweathermap.org/img/wn/{{ data.Weather_Icon }}@2x.png" 
+                               alt="Weather Icon" class="weather-icon" /> 
+                        </li>
+                        <li><strong>Temperature: &nbsp; </strong>{{ data.Temperature }}</li>
+                        <li><strong>Feels Like: &nbsp; </strong>{{ data['Feels Like'] }}</li>
+                        <li><strong>Min Temperature: &nbsp; </strong>{{ data['Min Temperature'] }}</li>
+                        <li><strong>Max Temperature: &nbsp; </strong>{{ data['Max Temperature'] }}</li>
+                        <ul>
+                          {% if data['Rain Volume'] %}
+                              <li><strong>Rain Volume: &nbsp; </strong>{{ data['Rain Volume'] }}</li>
+                          {% endif %}
+                          {% if data['Snow Volume'] %}
+                              <li><strong>Snow Volume: &nbsp; </strong>{{ data['Snow Volume'] }}</li>
+                          {% endif %}
+                        </ul>
+                      
+                        <li><strong>Visibility: &nbsp; </strong>{{ data.Visibility }}</li>
+                    {% endif %}
+                    {% if source == "Tomorrow.io" %}
+                        <li><strong>Humidity: &nbsp; </strong>{{ data.Humidity }}</li>
+                        <li><strong>Pressure: &nbsp; </strong>{{ data.Pressure }}</li>
+                        <li><strong>Wind Speed: &nbsp; </strong>{{ data['Wind Speed'] }}</li>
+                        <li><strong>Wind Gust: &nbsp; </strong>{{ data['Wind Gust'] }}</li>
+                        <li><strong>Wind Direction: &nbsp; </strong>{{ data['Wind Direction'] }}</li>
+                        <li><strong>Cloud Base: &nbsp; </strong>{{ data['Cloud Base'] }}</li>
+                        <li><strong>Cloud Ceiling: &nbsp; </strong>{{ data['Cloud Ceiling'] }}</li>
+                        <li><strong>Cloudiness: &nbsp; </strong>{{ data.Cloudiness }}</li>
+                        <li><strong>Dew Point: &nbsp; </strong>{{ data['Dew Point'] }}</li>
+                        <li><strong>UV Index: &nbsp; </strong>{{ data['UV Index'] }}</li>
+                        <li><strong>UV Health Concern: &nbsp; </strong>{{ data['UV Health Concern'] }}</li>
+                    {% endif %}
+                </ul>
+            </li>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Display data from weather_info2 -->
+        {% if weather_info2 %}
+          {% for source, data in weather_info2.items() %}
+            <li class="collection-item">
+                <ul>
+                    {% if source == "OpenWeatherMap" %}
+                        <li><strong>Sunrise: &nbsp; </strong>{{ data.Sunrise }}</li>
+                        <li><strong>Sunset: &nbsp; </strong>{{ data.Sunset }}</li>
+                        <li><strong>Current Local Time: &nbsp; </strong>{{ data['Current Local Time'] }}</li>
+                    {% endif %}
+                </ul>
+            </li>
+          {% endfor %}
+        {% endif %}
+
+      {% else %}
+        <li class="collection-item">
+          <strong>No weather information available.</strong>
+        </li>
+      {% endif %}
+    </ul>
+
+    <div class="center-align">
+      <a href="/" class="btn waves-effect waves-light">Back</a>
+    </div>
+  </div>
+
+  <div class="interval-selector">
+    <form id="forecastForm" method="post" action="/forecast">
+      <input type="hidden" name="lat" value="{{ lat }}" />
+      <input type="hidden" name="lon" value="{{ lon }}" />
+      <div id="intervalbtn">
+        <label>
+          <input type="radio" name="interval" value="hourly" checked /> Hourly (upto 6 days)
+        </label>
+        <label>
+          <input type="radio" name="interval" value="minutely" /> Minutely (upto 1 hr)
+        </label>
+      </div>
+      <div class="center-align">
+        <button type="submit" id="fc" class="btn waves-effect waves-light">
+          Get Forecast
+        </button>
+      </form>
+    </div>
+
+    <!-- Import Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>
