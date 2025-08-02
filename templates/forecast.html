@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather Forecast</title>
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        height: 100vh;
-        overflow: visible;
-      }
-      h1 {
-        text-align: center;
-      }
-      .plot-container {
-        margin: 20px;
-      }
-      .plot-container h2 {
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Weather Forecast</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Forecast - {{ interval|title }} Data</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Weather Forecast - {{ interval|title }} Data</h1>
+      <p class="forecast-subtitle">
+        {% if interval == 'hourly' %}
+        📈 Detailed hourly weather forecast for the next 6 days
+        {% else %}
+        ⏱️ Minute-by-minute weather forecast for the next hour
+        {% endif %}
+      </p>
+    </div>
 
     <div class="plot-container">
       <h2>Temperature</h2>
@@ -84,5 +80,13 @@
       <h2>Evapotranspiration</h2>
       {{ evapotranspiration_plot_div|safe }}
     </div>
-  </body>
+
+    <div class="action-buttons" style="margin-top: 2rem; text-align: center;">
+      <a href="/" class="btn btn-primary">
+        🏠 Home
+      </a>
+    </div>
+  </div>
+</body>
+
 </html>

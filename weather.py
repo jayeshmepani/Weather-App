@@ -130,7 +130,7 @@ def display_weather(openweather_data, tomorrow_data):
         values = tomorrow_data['data']['values']
         location = tomorrow_data['location']
         weather_info["Tomorrow.io"] = {}
-        weather_info["Tomorrow.io"]["Coordinates"] = f"Longitude {location['lon']}, Latitude {location['lat']}"
+        weather_info["Tomorrow.io"]["Coordinates"] = f"Longitude: {location['lon']}, Latitude: {location['lat']}"
     
     if openweather_data:
         weather_info1["OpenWeatherMap"] = {}
@@ -316,7 +316,8 @@ def forecast():
             evapotranspiration_plot_div=plots[8], 
             apparent_temp_plot_div=plots[9],
             wind_direction_plot_div=plots[10], 
-            wind_gust_plot_div=plots[11]
+            wind_gust_plot_div=plots[11],
+            interval=interval
         )
     except KeyError as e:
         logger.error(f"Unexpected data structure: {e}")
